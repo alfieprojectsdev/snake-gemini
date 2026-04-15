@@ -54,6 +54,8 @@ class Snake:
             return True
         return False
 
+from cv_controller import SnakeGestureController
+
 class Game:
     def __init__(self, use_cv=False):
         pygame.init()
@@ -71,6 +73,7 @@ class Game:
         self.score = 0
         self.fps = 10
         self.game_over = False
+        if self.use_cv: self.cv_ctrl.start()
 
     def _spawn_food(self):
         while True:
@@ -79,8 +82,16 @@ class Game:
                 return food
 
     def handle_input(self):
+        if self.use_cv:
+            move = self.cv_ctrl.get_move()
+            if move == 'UP': self.snake.change_direction(UP)
+            elif move == 'DOWN': self.snake.change_direction(DOWN)
+            elif move == 'LEFT': self.snake.change_direction(LEFT)
+            elif move == 'RIGHT': self.snake.change_direction(RIGHT)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                if self.use_cv: self.cv_ctrl.stop()
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
@@ -93,6 +104,7 @@ class Game:
                 elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     self.snake.change_direction(RIGHT)
                 elif event.key == pygame.K_ESCAPE:
+                    if self.use_cv: self.cv_ctrl.stop()
                     pygame.quit()
                     sys.exit()
                 elif event.key == pygame.K_r and self.game_over:
