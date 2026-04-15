@@ -55,12 +55,14 @@ class Snake:
         return False
 
 class Game:
-    def __init__(self):
+    def __init__(self, use_cv=False):
         pygame.init()
         self.screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
         pygame.display.set_caption("Nokia Snake - Gemini")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("monospace", 15)
+        self.use_cv = use_cv
+        self.cv_ctrl = SnakeGestureController() if use_cv else None
         self.reset()
 
     def reset(self):
@@ -145,5 +147,9 @@ class Game:
             self.clock.tick(self.fps)
 
 if __name__ == "__main__":
-    game = Game()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cv", action="store_true")
+    args = parser.parse_args()
+    game = Game(use_cv=args.cv)
     game.run()
