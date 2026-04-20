@@ -19,6 +19,8 @@ DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
 
+from itertools import islice
+
 class Snake:
     def __init__(self):
         # Start at center (10, 10) with 3 segments
@@ -50,7 +52,7 @@ class Snake:
         if not (0 <= head[0] < GRID_SIZE and 0 <= head[1] < GRID_SIZE):
             return True
         # Self collision
-        if head in list(self.body)[1:]:
+        if head in islice(self.body, 1, None):
             return True
         return False
 
@@ -73,7 +75,9 @@ class Game:
         self.score = 0
         self.fps = 10
         self.game_over = False
-        if self.use_cv: self.cv_ctrl.start()
+        if self.use_cv and self.cv_ctrl is not None:
+            self.cv_ctrl.stop()
+            self.cv_ctrl.start()
 
     def _spawn_food(self):
         while True:
